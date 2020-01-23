@@ -100,7 +100,7 @@ void TrackerParam::read(const std::string& filename)
 	      exit(-1);
 	    }
       }
-      else if(line.find("[GAMMA]") != std::string::npos)
+      else if(line.find("[DELTA]") != std::string::npos)
       {
 	    std::getline(file, line);
 	    try
@@ -108,15 +108,15 @@ void TrackerParam::read(const std::string& filename)
 	      std::istringstream iss(line);
 	      float a, b;
 	      if (!(iss >> a >> b)) { break; }
-	      target_delta = cv::Point2f(a, b);
-          P_init << std::pow(target_delta.x, 2), 0, 0, 0,
+	      delta = cv::Point2f(a, b);
+          P_init << std::pow(delta.x, 2), 0, 0, 0,
                          0, .1, 0, 0,
-                         0, 0, std::pow(target_delta.y, 2), 0,
+                         0, 0, std::pow(delta.y, 2), 0,
                          0, 0, 0, .1;
 	    }
 	    catch(...)
 	    {
-	      std::cerr << "Error in converting the GAMMA: " << line << std::endl;
+	      std::cerr << "Error in converting the DELTA: " << line << std::endl;
 	      exit(-1);
 	    }
       }
@@ -232,7 +232,7 @@ void TrackerParam::read(const std::string& filename)
   std::cout << "[R_MATRIX]: " << R << std::endl;
   std::cout << "[G_MATRIX]: " << G << std::endl;
   std::cout << "[Q_MATRIX]: " << Q << std::endl;
-  std::cout << "[TARGET_DELTA]: " << target_delta.x << ", " << target_delta.y << std::endl;
+  std::cout << "[DELTA]: " << delta.x << ", " << delta.y << std::endl;
   std::cout << "[INITIAL P MATRIX]: " << P_init << std::endl;
   std::cout << "[DT]: " << dt << std::endl;
   std::cout << "[LOCAL_ASSOCIATION_COST]: " << assocCost << std::endl;
