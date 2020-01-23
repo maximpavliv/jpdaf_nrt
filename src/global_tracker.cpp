@@ -210,8 +210,8 @@ void GlobalTracker::manage_new_tracks()
         {
           const float& vx = not_associated_.at(j).x() - prev_detections_.at(i).x();
           const float& vy = not_associated_.at(j).y() - prev_detections_.at(i).y();
-          std::shared_ptr<Track> tr(new Track(param_.dt, param_.target_delta, not_associated_.at(j).x(), not_associated_.at(j).y(), 
-					        vx, vy, param_.g_sigma, param_.gamma, param_.R, param_.max_missed_rate, param_.min_acceptance_rate)); // TODO check track class
+          std::shared_ptr<Track> tr(new Track(param_.dt, not_associated_.at(j).x(), not_associated_.at(j).y(), 
+					        vx, vy, param_.g_sigma, param_.gamma, param_.R, param_.Q, param_.P_init, param_.max_missed_rate, param_.min_acceptance_rate)); // TODO check track class
           tracker->push_back(tr);
         }
       }

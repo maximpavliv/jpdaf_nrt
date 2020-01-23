@@ -1,8 +1,9 @@
 #include "kalman.h"
 
 using namespace JPDAFTracker;
+using namespace std;
 
-Kalman::Kalman(const float& dt, const cv::Point2f& target_delta, const float& x, const float& y, const float& vx, const float& vy, const Eigen::Matrix2f& _R)
+Kalman::Kalman(const float& dt, const float& x, const float& y, const float& vx, const float& vy, const Eigen::Matrix2f& _R, const Eigen::Matrix4f& _Q, const Eigen::Matrix4f& P_init)
 {
   //TRANSITION MATRIX
   A << 1, dt, 0, 0,
@@ -10,15 +11,7 @@ Kalman::Kalman(const float& dt, const cv::Point2f& target_delta, const float& x,
        0, 0, 1, dt,
        0, 0, 0, 1;
   
-  //process noise covariance matrix  // TODO Why Q=_R and R=_R??
-  Q = _R,
-  //NOISE EVOLUTION
-  G = Eigen::MatrixXf(4, 2);
-  
-  G << std::pow(dt, 2) / 2, 0,
-	dt, 0,
-	0, std::pow(dt, 2) / 2,
-	0, dt;
+  Q = _Q,
 	  
   //STATE OBSERVATION MATRIX
   C = Eigen::MatrixXf(2, 4);
@@ -26,10 +19,7 @@ Kalman::Kalman(const float& dt, const cv::Point2f& target_delta, const float& x,
        0, 0, 1, 0;
   
   //INITIAL COVARIANCE MATRIX
-  P << std::pow(target_delta.x, 2), 0, 0, 0,
-       0, .1, 0, 0,
-       0, 0, std::pow(target_delta.y, 2), 0,
-       0, 0, 0, .1;
+  P = P_init;
   //GAIN     
   K = Eigen::MatrixXf(4, 2);
   
@@ -56,7 +46,7 @@ cv::Point2f Kalman::predict()
   }
   
   //Covariance Matrix predicted error
-  P_predict = A * P * A.transpose() + G * Q * G.transpose(); //TODO Why G and G transpose?? -- Actually might be the same answer to this question and to the one above (Q=R). This might need to be changed (and investigated why done the following way).
+  P_predict = A * P * A.transpose() + Q;
   
   
   //Predicted Measurement

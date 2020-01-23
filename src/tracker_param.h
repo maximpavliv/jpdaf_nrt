@@ -54,6 +54,9 @@ namespace JPDAFTracker
       int min_acceptance_rate;
       cv::Point2f target_delta;
       Eigen::Matrix2f R;
+      Eigen::MatrixXf G;
+      Eigen::Matrix4f Q;
+      Eigen::Matrix4f P_init;
       float dt;
     public:
       TrackerParam() { ; }
