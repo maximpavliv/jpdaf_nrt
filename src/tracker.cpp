@@ -208,7 +208,7 @@ Tracker::VecBool Tracker::analyze_tracks(const cv::Mat& _q)
   cv::Mat col_sum(cv::Size(m_q.cols, 1), _q.type(), cv::Scalar(0));
 
 
-  VecBool not_associate(m_q.cols, true); //ALL TRACKS ARE ASSOCIATED
+  VecBool associated(m_q.cols, true); //ALL TRACKS ARE ASSOCIATED
   for(uint i = 0; i < m_q.rows; ++i)
   {
     col_sum += m_q.row(i);
@@ -224,7 +224,7 @@ Tracker::VecBool Tracker::analyze_tracks(const cv::Mat& _q)
   
   for(uint i = 0; i < zeroValues.total(); ++i)
   {
-    not_associate.at(zeroValues.at<cv::Point>(i).x) = false;
+    associated.at(zeroValues.at<cv::Point>(i).x) = false;
   }
-  return not_associate;
+  return associated;
 }

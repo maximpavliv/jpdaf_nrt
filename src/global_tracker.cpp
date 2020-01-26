@@ -15,7 +15,6 @@ GlobalTracker::GlobalTracker(const TrackerParam& _param)
 void GlobalTracker::track(const GlobalTracker::Detections& _detections)
 {
   //cout << "----------\n";
-  //cout << "Number of local trackers: " << localTrackers_.size() << "\n";
   if(init_) // first go
   {
     prev_detections_.clear();
@@ -86,13 +85,13 @@ void GlobalTracker::track(const GlobalTracker::Detections& _detections)
     std::vector<Eigen::Vector2f> selected_detections;
   
     //ASSOCIATION
-    std::vector<bool> not_associate;
+    std::vector<bool> associated;
     associate(selected_detections, q, _detections);
     //cout << "global tracker q: " << endl << q << endl;
     
     if(q.total() > 0) //Should loose track somewhere here
     {
-      not_associate = analyze_tracks(q); //ASSIGN ALL THE NOT ASSOCIATED TRACKS
+      associated = analyze_tracks(q); //ASSIGN ALL THE NOT ASSOCIATED TRACKS
       //HYPOTHESIS
       const Matrices& association_matrices = generate_hypothesis(selected_detections, q); //TODO What?
       
@@ -101,27 +100,25 @@ void GlobalTracker::track(const GlobalTracker::Detections& _detections)
       last_beta_ = beta_.row(beta_.rows() - 1);
 	
       //KALMAN PREDICT STEP
-      uint i = 0, j = 0;
+      uint i = 0;
       
       for(const auto& track : tracks_)
       {
-	    if(not_associate.at(j))
+	    if(associated.at(i))
 	    {
 	      track->gainUpdate(last_beta_(i));
 	    }
-	    j++;
 	    i++;
       }
       
       //UPDATE AND CORRECT
-      i = 0, j = 0;
+      i = 0;
       for(const auto& track : tracks_)
       {
-	    if(not_associate.at(j))
+	    if(associated.at(i))
 	    {
 	      track->update(selected_detections, beta_.col(i), beta_(beta_.rows() - 1, i) );
 	    }
-	    ++j;
 	    ++i;
       }
     }
@@ -182,8 +179,6 @@ void GlobalTracker::manage_new_tracks()
     APS.Solve(costs, prevDetSize, deteSize, assignments, AssignmentProblemSolver::optimal);
 
     const uint& assSize = assignments.size();
-
-    //cout << "Prev detections size: " <<  prevDetSize << ", not_associated_size: " << deteSize << ", assignments size: " << assSize << "\n"; assSize = prevDetSize apparently. manage tracks isn't called at each step, check when called
 
     cv::Mat assigmentsBin = cv::Mat::zeros(cv::Size(deteSize, prevDetSize), CV_32SC1);
     

@@ -29,7 +29,7 @@ void LocalTracker::track(const std::vector< Detection >& _detections, VecBool& _
   std::vector<Eigen::Vector2f> selected_detections;
   
   //ASSOCIATION
-  std::vector<bool> not_associate;
+  std::vector<bool> associated;
   associate(selected_detections, q, _detections, _isAssoc);
   //cout << "q = " << endl << " "  << q << endl << endl;
   
@@ -44,7 +44,7 @@ void LocalTracker::track(const std::vector< Detection >& _detections, VecBool& _
   else
   {
     //cout << "Analyze tracks from local tracker\n";
-    not_associate = analyze_tracks(q); //ASSIGN ALL THE NOT ASSOCIATED TRACKS
+    associated = analyze_tracks(q); //ASSIGN ALL THE NOT ASSOCIATED TRACKS
       
     //HYPOTHESIS
     const Matrices& association_matrices = generate_hypothesis(selected_detections, q);
@@ -54,31 +54,29 @@ void LocalTracker::track(const std::vector< Detection >& _detections, VecBool& _
     last_beta_ = beta_.row(beta_.rows() - 1);
       
     //KALMAN PREDICT STEP
-    uint i = 0, j = 0;
+    uint i = 0;
     
     for(const auto& track : tracks_)
     {
-      if(not_associate.at(j))
+      if(associated.at(i))
       {
-	track->gainUpdate(last_beta_(i));
+    	track->gainUpdate(last_beta_(i));
       }
-      j++;
       i++;
     }
     
     //UPDATE AND CORRECT
-    i = 0, j = 0;
+    i = 0;
     for(const auto& track : tracks_)
     {
-      if(not_associate.at(j))
+      if(associated.at(i))
       {
-	track->update(selected_detections, beta_.col(i), beta_(beta_.rows() - 1, i) );
+	    track->update(selected_detections, beta_.col(i), beta_(beta_.rows() - 1, i) );
       }
       else
       {
-	track->notDetected();
+	    track->notDetected();
       }
-      ++j;
       ++i;
     }
   }
