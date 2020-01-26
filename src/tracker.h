@@ -92,7 +92,7 @@ namespace JPDAFTracker
     protected:
       constexpr static uint MAX_ASSOC = 10000;
     protected:
-     VecBool analyze_tracks(const cv::Mat& _q, const Detections& _detections);
+     VecBool analyze_tracks(const cv::Mat& _q);
      Matrices generate_hypothesis(const Vectors2f& _selected_detections, const cv::Mat& _q);
      Eigen::MatrixXf joint_probability(const Matrices& _association_matrices, const Vectors2f& _selected_detections);
     private:

@@ -52,10 +52,10 @@ namespace JPDAFTracker
       float global_g_sigma;
       int max_missed_rate;
       int min_acceptance_rate;
-      cv::Point2f delta;
+      cv::Point2f delta_pos;
+      cv::Point2f delta_vel;
       Eigen::Matrix2f R;
-      Eigen::MatrixXf G;
-      Eigen::Matrix4f Q;
+      Eigen::Matrix2f T;
       Eigen::Matrix4f P_init;
       float dt;
     public:
@@ -68,7 +68,8 @@ namespace JPDAFTracker
 	this->g_sigma = param_copy.g_sigma;
 	this->lambda = param_copy.lambda;
 	this->gamma = param_copy.gamma;
-	this->delta = param_copy.delta;
+	this->delta_pos = param_copy.delta_pos;
+	this->delta_vel = param_copy.delta_vel;
 	this->assocCost = param_copy.assocCost;
 	this->dt = param_copy.dt;
 	return *this;

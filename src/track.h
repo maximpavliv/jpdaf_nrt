@@ -46,7 +46,7 @@ namespace JPDAFTracker
     public:
       Track() { ; }
       Track(const float& dt, const float& x, const float& y, 
-	    const float& vx, const float& vy, const float& g_sigma, const float& gamma, const Eigen::Matrix2f& _R, const Eigen::Matrix4f& _Q, const Eigen::Matrix4f& P_init, int maxMissed, int minAcceptance);
+	    const float& vx, const float& vy, const float& g_sigma, const float& gamma, const Eigen::Matrix2f& _R, const Eigen::Matrix2f& _T, const Eigen::Matrix4f& P_init, int maxMissed, int minAcceptance);
       cv::Point2f predict();
       void setColor(const cv::Scalar& _color) 
       {

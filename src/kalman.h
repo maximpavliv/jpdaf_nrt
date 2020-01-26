@@ -42,7 +42,7 @@ namespace JPDAFTracker
   {
     public:
       Kalman() { ; }
-      Kalman(const float& dt, const float& x, const float& y, const float& vx, const float& vy, const Eigen::Matrix2f& _R, const Eigen::Matrix4f& _Q, const Eigen::Matrix4f& P_init);
+      Kalman(const float& dt, const float& x, const float& y, const float& vx, const float& vy, const Eigen::Matrix2f& _R, const Eigen::Matrix2f& _T, const Eigen::Matrix4f& P_init);
       cv::Point2f predict();
       void gainUpdate(const float& beta);
       Eigen::Vector4f update(const std::vector< Eigen::Vector2f >& selected_detections, const Eigen::VectorXf& beta, const float& last_beta);
@@ -73,10 +73,12 @@ namespace JPDAFTracker
       }
     private:
       Eigen::Matrix4f A; //Evolution state matrix
-      Eigen::Matrix4f Q; //Covariance Matrix associated to the evolution process
       Eigen::Matrix4f P; //Covariance Matrix
       Eigen::MatrixXf C;
       Eigen::Matrix2f R; //Proces measurement Covariance matrix
+      Eigen::Matrix2f T; //Proces measurement Covariance matrix
+      Eigen::MatrixXf G;
+      Eigen::Matrix4f Q; //Covariance Matrix associated to the evolution process
       Eigen::Matrix2f S;
       Eigen::MatrixXf K; //Gain
       Eigen::Matrix4f P_predict; //Covariance Matrix predicted error

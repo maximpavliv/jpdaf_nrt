@@ -3,7 +3,7 @@
 using namespace JPDAFTracker;
 using namespace std;
 
-Kalman::Kalman(const float& dt, const float& x, const float& y, const float& vx, const float& vy, const Eigen::Matrix2f& _R, const Eigen::Matrix4f& _Q, const Eigen::Matrix4f& P_init)
+Kalman::Kalman(const float& dt, const float& x, const float& y, const float& vx, const float& vy, const Eigen::Matrix2f& _R, const Eigen::Matrix2f& _T, const Eigen::Matrix4f& P_init)
 {
   //TRANSITION MATRIX
   A << 1, dt, 0, 0,
@@ -11,7 +11,6 @@ Kalman::Kalman(const float& dt, const float& x, const float& y, const float& vx,
        0, 0, 1, dt,
        0, 0, 0, 1;
   
-  Q = _Q,
 	  
   //STATE OBSERVATION MATRIX
   C = Eigen::MatrixXf(2, 4);
@@ -25,6 +24,19 @@ Kalman::Kalman(const float& dt, const float& x, const float& y, const float& vx,
   
   //measurement noise covariance matrix
   R = _R;
+
+  T = _T;
+
+  G = Eigen::MatrixXf(4, 2);
+  G << std::pow(dt, 2) / 2, 0,
+        	dt, 0,
+        	0, std::pow(dt, 2) / 2,
+        	0, dt;
+
+  Q = G * T * G.transpose(); // TODO Check why and how
+
+
+
        
   last_prediction = cv::Point2f(x, y);
   last_speed = cv::Point2f(vx, vy);

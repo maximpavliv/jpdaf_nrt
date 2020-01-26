@@ -165,32 +165,32 @@ Tracker::Matrices Tracker::generate_hypothesis(const Vec2f& _selected_detections
     {
       for(uint j = 1; j < _q.cols; ++j)
       {
-	if(_q.at<int>(i, j)) // == 1
-	{
-	  tmp_association_matrices.at(hyp_num)(i, 0) = 0;
-	  tmp_association_matrices.at(hyp_num)(i, j) = 1;
-	  ++hyp_num;
-	  if ( j == _q.cols - 1 ) continue;
-	  for(uint l = 0; l < _q.rows; ++l)
-	  {
-	    if(l != i)
+	    if(_q.at<int>(i, j)) // == 1
 	    {
-	      for(uint m = j + 1; m < _q.cols; ++m) // CHECK Q.COLS - 1
+	      tmp_association_matrices.at(hyp_num)(i, 0) = 0;
+	      tmp_association_matrices.at(hyp_num)(i, j) = 1;
+	      ++hyp_num;
+	      if ( j == _q.cols - 1 ) continue;
+	      for(uint l = 0; l < _q.rows; ++l)
 	      {
-		if(_q.at<int>(l, m))
-		{
-		  tmp_association_matrices.at(hyp_num)(i, 0) = 0;
-		  tmp_association_matrices.at(hyp_num)(i, j) = 1;
-		  tmp_association_matrices.at(hyp_num)(l, 0) = 0;
-		  tmp_association_matrices.at(hyp_num)(l, m) = 1;
-		  ++hyp_num;
-		} //if(q.at<int>(l, m))
-	      }// m
-	    } // if l != i
-	  } // l
-	} // if q(i, j) == 1
-      } // j
-    } // i
+	        if(l != i)
+	        {
+	          for(uint m = j + 1; m < _q.cols; ++m) // CHECK Q.COLS - 1
+	          {
+		        if(_q.at<int>(l, m))
+		        {
+		          tmp_association_matrices.at(hyp_num)(i, 0) = 0;
+		          tmp_association_matrices.at(hyp_num)(i, j) = 1;
+		          tmp_association_matrices.at(hyp_num)(l, 0) = 0;
+		          tmp_association_matrices.at(hyp_num)(l, m) = 1;
+		          ++hyp_num;
+		        }
+	          }
+	        }
+	      }
+	    }
+      }
+    }
   } 
   /////////////////////////////////////////////////////////////////////////////////
   Matrices association_matrices(hyp_num + 1);
@@ -200,9 +200,8 @@ Tracker::Matrices Tracker::generate_hypothesis(const Vec2f& _selected_detections
 }
 
 
-Tracker::VecBool Tracker::analyze_tracks(const cv::Mat& _q, const std::vector<Detection>& _detections)
+Tracker::VecBool Tracker::analyze_tracks(const cv::Mat& _q)
 {
-  //Here association is lost probably
   const cv::Mat& m_q = _q(cv::Rect(1, 0, _q.cols - 1, _q.rows));
   //cout << "Analyse tracks: m_q: " << endl << m_q << endl;  
     

@@ -92,8 +92,7 @@ void GlobalTracker::track(const GlobalTracker::Detections& _detections)
     
     if(q.total() > 0) //Should loose track somewhere here
     {
-      //cout << "Analyze tracks from global tracker\n";
-      not_associate = analyze_tracks(q, _detections); //ASSIGN ALL THE NOT ASSOCIATED TRACKS
+      not_associate = analyze_tracks(q); //ASSIGN ALL THE NOT ASSOCIATED TRACKS
       //HYPOTHESIS
       const Matrices& association_matrices = generate_hypothesis(selected_detections, q); //TODO What?
       
@@ -211,7 +210,7 @@ void GlobalTracker::manage_new_tracks()
           const float& vx = not_associated_.at(j).x() - prev_detections_.at(i).x();
           const float& vy = not_associated_.at(j).y() - prev_detections_.at(i).y();
           std::shared_ptr<Track> tr(new Track(param_.dt, not_associated_.at(j).x(), not_associated_.at(j).y(), 
-					        vx, vy, param_.g_sigma, param_.gamma, param_.R, param_.Q, param_.P_init, param_.max_missed_rate, param_.min_acceptance_rate)); // TODO check track class
+					        vx, vy, param_.g_sigma, param_.gamma, param_.R, param_.T, param_.P_init, param_.max_missed_rate, param_.min_acceptance_rate)); // TODO check track class
           tracker->push_back(tr);
         }
       }
@@ -236,7 +235,7 @@ void GlobalTracker::manage_new_tracks()
     prev_detections_.clear();
     for(uint i = 0; i < dets.total(); ++i)
     {
-      const uint& idx = dets.at<cv::Point>(i).x;
+      const uint& idx = dets.at<cv::Point>(i).x; // NOT USED
       prev_detections_.push_back(not_associated_.at(i));
     }
   }
@@ -281,9 +280,9 @@ void GlobalTracker::associate(std::vector< Eigen::Vector2f >& _selected_detectio
       const float& eucl = euclideanDist(det, tr);
       if(mah <= param_.global_g_sigma && eucl <= param_.global_assocCost)
       {
-	_q.at<int>(validationIdx, 0) = 1;
-	_q.at<int>(validationIdx, i) = 1;
-	found = true;
+	    _q.at<int>(validationIdx, 0) = 1;
+	    _q.at<int>(validationIdx, i) = 1;
+	    found = true;
       }
       ++i;
     }

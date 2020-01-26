@@ -3,10 +3,10 @@
 using namespace JPDAFTracker;
 
 Track::Track(const float& dt, const float& x, const float& y, const float& vx, const float& vy,
-    const float& g_sigma, const float& gamma, const Eigen::Matrix2f& _R, const Eigen::Matrix4f& _Q, const Eigen::Matrix4f& P_init, int maxMissed, int minAcceptance)
+    const float& g_sigma, const float& gamma, const Eigen::Matrix2f& _R, const Eigen::Matrix2f& _T, const Eigen::Matrix4f& P_init, int maxMissed, int minAcceptance)
   : g_sigma(g_sigma), gamma(gamma)
 {
-  KF = std::shared_ptr<Kalman>(new Kalman(dt, x, y, vx, vy, _R, _Q, P_init));
+  KF = std::shared_ptr<Kalman>(new Kalman(dt, x, y, vx, vy, _R, _T, P_init));
   life_time = 0;
   nodetections = 0;
   maxMissedRate = maxMissed;

@@ -27,7 +27,6 @@ void LocalTracker::track(const std::vector< Detection >& _detections, VecBool& _
   
   cv::Mat_<int> q(cv::Size(tracks_.size(), _detections.size()), int(0));
   std::vector<Eigen::Vector2f> selected_detections;
-  //cout << "q = " << endl << " "  << q << endl << endl;
   
   //ASSOCIATION
   std::vector<bool> not_associate;
@@ -44,10 +43,8 @@ void LocalTracker::track(const std::vector< Detection >& _detections, VecBool& _
   }
   else
   {
-    //Should loose track somewhere here
-    //CHECK ASSOCIATIONS
     //cout << "Analyze tracks from local tracker\n";
-    not_associate = analyze_tracks(q, _detections); //ASSIGN ALL THE NOT ASSOCIATED TRACKS
+    not_associate = analyze_tracks(q); //ASSIGN ALL THE NOT ASSOCIATED TRACKS
       
     //HYPOTHESIS
     const Matrices& association_matrices = generate_hypothesis(selected_detections, q);
@@ -131,16 +128,16 @@ void LocalTracker::associate(std::vector< Eigen::Vector2f >& _selected_detection
       tr_cv.at<float>(0) = tr(0);
       tr_cv.at<float>(1) = tr(1);
       const int& id = track->getId(); // TODO Is this even used??
-      const Eigen::Matrix2f& S = track->S().inverse();
-      cv::Mat S_cv;
-      cv::eigen2cv(S, S_cv);
-      const float& mah = cv::Mahalanobis(tr_cv, det_cv, S_cv);
+      const Eigen::Matrix2f& iS = track->S().inverse();
+      cv::Mat iS_cv;
+      cv::eigen2cv(iS, iS_cv);
+      const float& mah = cv::Mahalanobis(tr_cv, det_cv, iS_cv);
       const float& eucl = euclideanDist(det, tr);
       if(mah <= param_.g_sigma && eucl <= param_.assocCost)
       {
-	_q.at<int>(validationIdx, 0) = 1;
-	_q.at<int>(validationIdx, i) = 1;
-	found = true;
+	    _q.at<int>(validationIdx, 0) = 1;
+	    _q.at<int>(validationIdx, i) = 1;
+	    found = true;
       }
       ++i;
     }

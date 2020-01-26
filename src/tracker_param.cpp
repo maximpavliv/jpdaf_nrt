@@ -100,7 +100,7 @@ void TrackerParam::read(const std::string& filename)
 	      exit(-1);
 	    }
       }
-      else if(line.find("[DELTA]") != std::string::npos)
+      else if(line.find("[DELTA_POS]") != std::string::npos)
       {
 	    std::getline(file, line);
 	    try
@@ -108,15 +108,31 @@ void TrackerParam::read(const std::string& filename)
 	      std::istringstream iss(line);
 	      float a, b;
 	      if (!(iss >> a >> b)) { break; }
-	      delta = cv::Point2f(a, b);
-          P_init << std::pow(delta.x, 2), 0, 0, 0,
-                         0, .1, 0, 0,
-                         0, 0, std::pow(delta.y, 2), 0,
-                         0, 0, 0, .1;
+	      delta_pos = cv::Point2f(a, b);
 	    }
 	    catch(...)
 	    {
-	      std::cerr << "Error in converting the DELTA: " << line << std::endl;
+	      std::cerr << "Error in converting the DELTA POS: " << line << std::endl;
+	      exit(-1);
+	    }
+      }
+      else if(line.find("[DELTA_VEL]") != std::string::npos)
+      {
+	    std::getline(file, line);
+	    try
+	    {
+	      std::istringstream iss(line);
+	      float c, d;
+	      if (!(iss >> c >> d)) { break; }
+	      delta_vel = cv::Point2f(c, d);
+          P_init << std::pow(delta_pos.x, 2), 0, 0, 0,
+                         0, std::pow(delta_vel.x, 2), 0, 0,
+                         0, 0, std::pow(delta_pos.y, 2), 0,
+                         0, 0, 0, std::pow(delta_vel.y, 2);
+	    }
+	    catch(...)
+	    {
+	      std::cerr << "Error in converting the DELTA VEL: " << line << std::endl;
 	      exit(-1);
 	    }
       }
@@ -145,16 +161,29 @@ void TrackerParam::read(const std::string& filename)
 	      iss = std::istringstream(line);
 	      if (!(iss >> c >> d)) { break; }
 	      R << a, b, c, d;
-          G = Eigen::MatrixXf(4, 2);
-          G << std::pow(dt, 2) / 2, 0,
-                	dt, 0,
-                	0, std::pow(dt, 2) / 2,
-                	0, dt;
-          Q = G * R * G.transpose(); // TODO Check why and how
 	    }
 	    catch(...)
 	    {
 	      std::cerr << "Error in converting the R VALUES: " << line << std::endl;
+	      exit(-1);
+	    }
+      }
+      else if(line.find("[T_MATRIX]") != std::string::npos)
+      {
+	    std::getline(file, line);
+	    try
+	    {
+	      std::istringstream iss(line);
+	      float a, b, c, d;
+	      if (!(iss >> a >> b)) { break; }
+	      std::getline(file, line);
+	      iss = std::istringstream(line);
+	      if (!(iss >> c >> d)) { break; }
+	      T << a, b, c, d;
+	    }
+	    catch(...)
+	    {
+	      std::cerr << "Error in converting the T VALUES: " << line << std::endl;
 	      exit(-1);
 	    }
       }
@@ -227,12 +256,12 @@ void TrackerParam::read(const std::string& filename)
 //  std::cout << "[PG]: " << pg << std::endl;
   std::cout << "[LOCAL_GSIGMA]: " << g_sigma << std::endl;
   std::cout << "[GLOBAL_GSIGMA]: " << global_g_sigma << std::endl;
-  std::cout << "[LAMBDA]: " << lambda << std::endl;
+//  std::cout << "[LAMBDA]: " << lambda << std::endl;
   std::cout << "[GAMMA]: " << gamma << std::endl;
   std::cout << "[R_MATRIX]: " << R << std::endl;
-  std::cout << "[G_MATRIX]: " << G << std::endl;
-  std::cout << "[Q_MATRIX]: " << Q << std::endl;
-  std::cout << "[DELTA]: " << delta.x << ", " << delta.y << std::endl;
+  std::cout << "[T_MATRIX]: " << T << std::endl;
+  std::cout << "[DELTA POS]: " << delta_pos.x << ", " << delta_pos.y << std::endl;
+  std::cout << "[DELTA VEL]: " << delta_vel.x << ", " << delta_vel.y << std::endl;
   std::cout << "[INITIAL P MATRIX]: " << P_init << std::endl;
   std::cout << "[DT]: " << dt << std::endl;
   std::cout << "[LOCAL_ASSOCIATION_COST]: " << assocCost << std::endl;
