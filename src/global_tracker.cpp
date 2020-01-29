@@ -14,7 +14,7 @@ GlobalTracker::GlobalTracker(const TrackerParam& _param)
 
 void GlobalTracker::track(const GlobalTracker::Detections& _detections)
 {
-  //cout << "----------\n";
+//  cout << "----------\n";
   if(init_) // first go
   {
     prev_detections_.clear();
@@ -53,12 +53,6 @@ void GlobalTracker::track(const GlobalTracker::Detections& _detections)
       tracker->track(_detections, isAssoc, trackID_); //TODO check exactly what this does
     }
     i = 0;
-    /*cout << "global tracker: isAssoc: ";
-    for (int w=0;w<isAssoc.size();w++)
-    {
-        cout << isAssoc[w] << " ";    
-    }
-    //cout << endl;*/
     for(const auto& ass : isAssoc)
     {
       if(!ass)
@@ -87,16 +81,28 @@ void GlobalTracker::track(const GlobalTracker::Detections& _detections)
     //ASSOCIATION
     std::vector<bool> associated;
     associate(selected_detections, q, _detections);
-    //cout << "global tracker q: " << endl << q << endl;
+//    cout << "global tracker q: " << endl << q << endl;
     
     if(q.total() > 0) //Should loose track somewhere here
     {
       associated = analyze_tracks(q); //ASSIGN ALL THE NOT ASSOCIATED TRACKS
+//      cout << "Global Tracker: associated = ";
+//      for (const auto& assoc : associated)
+//        cout << assoc << " ";
+//      cout << endl;
       //HYPOTHESIS
       const Matrices& association_matrices = generate_hypothesis(selected_detections, q); //TODO What?
       
+/*      cout << "Global Tracker: association_matrices (generate_hypothesis): " << endl;
+      for(const auto& assoc_mat : association_matrices)
+      {
+        cout << assoc_mat << endl <<endl; 
+      }*/
+
+
       //COMPUTE JOINT PROBABILITY
       beta_ = joint_probability(association_matrices, selected_detections);
+      //cout << "global tracker beta: " << endl << beta_ << endl;
       last_beta_ = beta_.row(beta_.rows() - 1);
 	
       //KALMAN PREDICT STEP

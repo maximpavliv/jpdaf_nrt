@@ -262,7 +262,7 @@ void TrackerParam::read(const std::string& filename)
   std::cout << "[T_MATRIX]: " << T << std::endl;
   std::cout << "[DELTA POS]: " << delta_pos.x << ", " << delta_pos.y << std::endl;
   std::cout << "[DELTA VEL]: " << delta_vel.x << ", " << delta_vel.y << std::endl;
-  std::cout << "[INITIAL P MATRIX]: " << P_init << std::endl;
+  std::cout << "[INITIAL P MATRIX]: " << std::endl << P_init << std::endl;
   std::cout << "[DT]: " << dt << std::endl;
   std::cout << "[LOCAL_ASSOCIATION_COST]: " << assocCost << std::endl;
   std::cout << "[GLOBAL_ASSOCIATION_COST]: " << global_assocCost << std::endl;

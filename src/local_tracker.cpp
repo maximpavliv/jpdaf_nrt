@@ -31,7 +31,7 @@ void LocalTracker::track(const std::vector< Detection >& _detections, VecBool& _
   //ASSOCIATION
   std::vector<bool> associated;
   associate(selected_detections, q, _detections, _isAssoc);
-  //cout << "q = " << endl << " "  << q << endl << endl;
+//  cout << "Local Tracker: q = " << endl  << q << endl;
   
   //NO ASSOCIATIONS
   if(q.total() == 0)
@@ -45,12 +45,24 @@ void LocalTracker::track(const std::vector< Detection >& _detections, VecBool& _
   {
     //cout << "Analyze tracks from local tracker\n";
     associated = analyze_tracks(q); //ASSIGN ALL THE NOT ASSOCIATED TRACKS
-      
+//    cout << "Local Tracker: associated = ";
+//    for (const auto& assoc : associated)
+//      cout << assoc << " ";
+//    cout << endl;
+
     //HYPOTHESIS
     const Matrices& association_matrices = generate_hypothesis(selected_detections, q);
+    
+/*    cout << "Local Tracker: association_matrices (generate_hypothesis): " << endl;
+    for(const auto& assoc_mat : association_matrices)
+    {
+      cout << assoc_mat << endl << endl; 
+    }*/
       
     //COMPUTE JOINT PROBABILITY
     beta_ = joint_probability(association_matrices, selected_detections);
+    //cout << "local tracker beta: " << endl << beta_ << endl;
+
     last_beta_ = beta_.row(beta_.rows() - 1);
       
     //KALMAN PREDICT STEP

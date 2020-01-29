@@ -54,33 +54,31 @@ Eigen::MatrixXf Tracker::joint_probability(const Matrices& _association_matrices
       
       if(mea_indicator == 1)
       {
-	//Update the total number of wrong measurements in X
-	--false_alarms;
-	
-	//Detect which track is associated to the measurement j 
-	//and compute the probability
-	for(uint notZero = 0; notZero < tracksize; ++notZero)
-	{
-	  if(A_matrix(0, notZero) == 1)
-	  {
-	    const Eigen::Vector2f& z_predict = tracks_.at(notZero)->getLastPredictionEigen();
-	    const Eigen::Matrix2f& S = tracks_.at(notZero)->S();
-	    const Eigen::Vector2f& diff = selected_detections.at(j) - z_predict;
-	    cv::Mat S_cv;
-	    cv::eigen2cv(S, S_cv);
-	    //const float& b = diff.transpose() * S.inverse() * diff;
-	    cv::Mat z_cv(cv::Size(2, 1), CV_32FC1);
-	    cv::Mat det_cv(cv::Size(2, 1), CV_32FC1);
-	    z_cv.at<float>(0) = z_predict(0);
-	    z_cv.at<float>(1) = z_predict(1);
-	    det_cv.at<float>(0) = selected_detections.at(j)(0);
-	    det_cv.at<float>(1) = selected_detections.at(j)(1);
-	    const float& b = cv::Mahalanobis(z_cv, det_cv, S_cv.inv());
-	    N = N / sqrt((2*CV_PI*S).determinant())*exp(-b);
-	  }
-	}
+	    //Update the total number of wrong measurements in X
+	    --false_alarms;  
+	    //Detect which track is associated to the measurement j 
+	    //and compute the probability
+	    for(uint notZero = 0; notZero < tracksize; ++notZero)
+	    {
+	      if(A_matrix(0, notZero) == 1)
+	      {
+	        const Eigen::Vector2f& z_predict = tracks_.at(notZero)->getLastPredictionEigen();
+	        const Eigen::Matrix2f& S = tracks_.at(notZero)->S();
+	        //const Eigen::Vector2f& diff = selected_detections.at(j) - z_predict;
+	        cv::Mat S_cv;
+	        cv::eigen2cv(S, S_cv);
+	        //const float& b = diff.transpose() * S.inverse() * diff;
+	        cv::Mat z_cv(cv::Size(2, 1), CV_32FC1);
+	        cv::Mat det_cv(cv::Size(2, 1), CV_32FC1);
+	        z_cv.at<float>(0) = z_predict(0);
+	        z_cv.at<float>(1) = z_predict(1);
+	        det_cv.at<float>(0) = selected_detections.at(j)(0);
+	        det_cv.at<float>(1) = selected_detections.at(j)(1);
+	        const float& b = cv::Mahalanobis(z_cv, det_cv, S_cv.inv());
+	        N = N / sqrt((2*CV_PI*S).determinant())*exp(-b);
+	      }
+	    }
       }
-      
     }
     
     const float& likelyhood = N / float(std::pow(V, false_alarms));
@@ -95,9 +93,9 @@ Eigen::MatrixXf Tracker::joint_probability(const Matrices& _association_matrices
       prior = 1.;
       for(uint j = 0; j < tracksize; ++j)
       {
-	const Eigen::MatrixXf& target_matrix = _association_matrices.at(i).col(j+1);
-	const int& target_indicator = target_matrix.sum();
-	prior = prior * std::pow(param_.pd, target_indicator) * std::pow((1 - param_.pd), (1 - target_indicator));
+	    const Eigen::MatrixXf& target_matrix = _association_matrices.at(i).col(j+1);
+	    const int& target_indicator = target_matrix.sum();
+	    prior = prior * std::pow(param_.pd, target_indicator) * std::pow((1 - param_.pd), (1 - target_indicator));
       }
     }
     
@@ -107,9 +105,9 @@ Eigen::MatrixXf Tracker::joint_probability(const Matrices& _association_matrices
     for(int j = 1; j <= false_alarms; ++j)
     {
       a = a * j;
-    }
-    
+    }    
     Pr(i) = a * likelyhood * prior;
+
   }
   
   const float& prSum = Pr.sum();
@@ -132,7 +130,7 @@ Eigen::MatrixXf Tracker::joint_probability(const Matrices& _association_matrices
     {
       for(uint k = 0; k < hyp_num; ++k)
       {
-	beta(j, i) = beta(j, i) + Pr(k) * _association_matrices.at(k)(j, i+1);
+    	beta(j, i) = beta(j, i) + Pr(k) * _association_matrices.at(k)(j, i+1);
       }
       sumBeta(i) += beta(j, i);
     }

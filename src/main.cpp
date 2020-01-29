@@ -29,9 +29,9 @@ std::map<int, std::vector< std::vector< std::string > > > petsReading(const std:
       std::vector<std::string> row;
       while (end != std::string::npos)
       {
-	row.push_back(line.substr(start, end - start));
-	start = end + delimiter.length();
-	end = line.find(delimiter, start);
+	    row.push_back(line.substr(start, end - start));
+	    start = end + delimiter.length();
+	    end = line.find(delimiter, start);
       }
       row.push_back(line.substr(start, end - start));
       
@@ -40,21 +40,21 @@ std::map<int, std::vector< std::vector< std::string > > > petsReading(const std:
       uint j = 2;
       for(uint i = 0; i < n; ++i)
       {
-	std::vector<std::string> currDetections;
-	try
-	{
-	  currDetections.push_back(row[j]);
-	  currDetections.push_back(row[++j]);
-	  currDetections.push_back(row[++j]);
-	  currDetections.push_back(row[++j]);
-	}
-	catch(...)
-	{
-	  std::cerr << "Error: cannot read parse:\n " << line << std::endl;
-	  exit(-1);
-	}
-	++j;
-	detections.push_back(currDetections);
+	    std::vector<std::string> currDetections;
+	    try
+	    {
+	      currDetections.push_back(row[j]);
+	      currDetections.push_back(row[++j]);
+	      currDetections.push_back(row[++j]);
+	      currDetections.push_back(row[++j]);
+	    }
+	    catch(...)
+	    {
+	      std::cerr << "Error: cannot read parse:\n " << line << std::endl;
+	      exit(-1);
+	    }
+	    ++j;
+	    detections.push_back(currDetections);
       }
   
       pets.insert(std::make_pair(atoi(row[0].c_str()), detections));
